@@ -1,5 +1,7 @@
 import os 
 import numpy as np
+import sys
+print(sys.executable)
 import pandas as pd
 import matplotlib.pyplot as plt
 import sklearn as sk
@@ -105,8 +107,6 @@ y = df_fin["State"]
 
 #salvo in x tutto il resto 
 x = df_fin.drop(["State"],axis=1)
-print(df_fin.drop(["State"],axis=1))
-print(y)
 #voglio lavorare con un vettore numpy invece di una serie pandas
 
 y = y.values
@@ -122,10 +122,10 @@ x_train, x_test, y_train, y_test = train_test_split(x,y,test_size = 0.25, random
 #con random_state che funge da seed per la regressione e il solver che indica il risolutore
 #il comando fit addestra il modello di supervised learning
 LR = LogisticRegression(random_state=0, solver='liblinear', penalty = 'l1').fit(x_train, y_train)
-print(LR)
+print(type(LR))
 #calcolo le mie previsioni
 predictions = LR.predict(x_test)
-print(predictions)
+print("predicitons: ", predictions)
 # Calculating and rounding the accuracy score of the Logistic Regression model on the test set.
 #calcolo la accuracy del modello di regressione logistica sul set di test e lo arrotondo a 4 cifre decimali
 #la funzione punteggio è calcolata confrontando i valori stimati con i valori reali (y_test)
@@ -159,7 +159,7 @@ if model_scrauso == 1:
             return (1/(1+np.exp(-x)))
 
 
-        def fit(x,y,l_r = 0.01,it_max = 1000):
+        def fits(x,y,l_r = 0.01,it_max = 1000):
             #faccio il fitting al modello utilizzando gradient descent
             it = 0
             m,n = np.shape(x)
@@ -174,17 +174,29 @@ if model_scrauso == 1:
                 weights -= l_r * der_weights
                 bias -= l_r * der_bias
                 cost_history.append(Loss(h,y))
-            print (cost_history)
+            #print (cost_history)
             return weights, bias, cost_history
         
         def predict(x,weights,bias):
-            return(sigmoid(np.dot(x,weights)+ bias) >= 0.5).astype(int)
-        plt.plot(fit(x_train,y_train)[2])
+            return(sigmoid(np.dot(x,weights) + bias) >= 0.3).astype(int)
+        def Ridge_regr(x,y,w,lam):
+            return 
+        predictions1 = predict(x_test,fits(x_train,y_train)[0],fits(x_train,y_train)[1])
+        accuracy1 = np.mean(predictions1 == y_test)
+        accuracy = np.mean(predictions == y_test)
+        print(f"Model Accuracy: {accuracy1:.2f}")
+        print(f"Model Accuracy: {accuracy:.2f}")
+
+        
         plt.grid(True)
         plt.xlabel("Iterations")
         plt.ylabel("Cost")
 
-
+fig,ax = plt.subplots(1,2)
+ax[0].plot(fits(x_train,y_train)[2])
+plt.grid(True)
+ax[1].plot(fits(x_train,y_train)[2])
+plt.grid(True)
 plt.show()
 #classification_report fornisce informazioni sulle principali grandezze necessarie per stilare il report
 y_true = y_test
