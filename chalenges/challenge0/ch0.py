@@ -125,18 +125,17 @@ LR = LogisticRegression(random_state=0, solver='liblinear', penalty = 'l1').fit(
 print(type(LR))
 #calcolo le mie previsioni
 predictions = LR.predict(x_test)
-print("predicitons: ", predictions)
 # Calculating and rounding the accuracy score of the Logistic Regression model on the test set.
 #calcolo la accuracy del modello di regressione logistica sul set di test e lo arrotondo a 4 cifre decimali
 #la funzione punteggio è calcolata confrontando i valori stimati con i valori reali (y_test)
 # The score is calculated by comparing the predicted values to the actual values (y_test).
 accuracy = round(LR.score(x_test, y_test), 4)
-print(accuracy)
+
 
 ###CHALLENGE
 
 #PLOT DEI RISULTATI
-plot = 0
+plot = 1
 if plot == 1:
     dl = {"Florida","California", "California", "Florida"}
     fig = ConfusionMatrixDisplay.from_predictions(y_test,predictions,display_labels = dl)
@@ -151,6 +150,7 @@ def mycost(y,y_pred):
     return(np.mean(((y-y_pred))**2))
 model_scrauso = 1
 if model_scrauso == 1:
+        
         def Loss(h,y):
             m = len(y)
             return -(1/m) * np.sum(y*np.log(h) + (1-y)*np.log(1-h))  
@@ -164,39 +164,73 @@ if model_scrauso == 1:
             it = 0
             m,n = np.shape(x)
             weights = np.zeros(n)
-            bias = 0 
+            #bias = 0 
             cost_history = []
             for i in range(it_max):
-                z = np.dot(x,weights) + bias
+
+                z = np.dot(x,weights)# + bias
                 h = sigmoid(z)
                 der_weights = (1/m) * np.dot(x.T,(h-y))
-                der_bias = (1/m) * np.sum(h - y)
+                #der_bias = (1/m) * np.sum(h - y)
                 weights -= l_r * der_weights
-                bias -= l_r * der_bias
+                #bias -= l_r * der_bias
                 cost_history.append(Loss(h,y))
+            print("Pesi passo ",i,": ",weights)
+            #print("Bias passo ",bias)
+
             #print (cost_history)
-            return weights, bias, cost_history
+            return weights, cost_history#,bias
+        def ridge_fit(x,y,l_r = 0.01,it_max = 1000):
+            #faccio il fitting al modello utilizzando gradient descent
+            it = 0
+            m,n = np.shape(x)
+            weights = np.zeros(n)
+            #bias = 0 
+            cost_history = []
+            for i in range(it_max):
+                z = np.dot(x,weights)# + bias
+                h = sigmoid(z)
+                der_weights = (1/m) * np.dot(x.T,(h-y)) + np.norm()
+                #der_bias = (1/m) * np.sum(h - y)
+                weights -= l_r * der_weights 
+                #bias -= l_r * der_bias
+                cost_history.append(Loss(h,y))
+            print("Pesi passo ",i,": ",weights)
+            #print("Bias passo ",bias)
+    
+        def predict(x,weights):
+            #riducendo la soglia q per la classificazione si aumenta l'accuracy?
+            q = 0.3
+            return(sigmoid(np.dot(x,weights)) >= q).astype(int)
         
-        def predict(x,weights,bias):
-            return(sigmoid(np.dot(x,weights) + bias) >= 0.3).astype(int)
-        def Ridge_regr(x,y,w,lam):
+        def Ridge_regr(x,y,w,lam):   
+            
             return 
-        predictions1 = predict(x_test,fits(x_train,y_train)[0],fits(x_train,y_train)[1])
+        
+        def Lasso_reg(x,y,w,lam):
+
+            return
+        
+        predictions1 = predict(x_test,fits(x_train,y_train)[0])
         accuracy1 = np.mean(predictions1 == y_test)
         accuracy = np.mean(predictions == y_test)
-        print(f"Model Accuracy: {accuracy1:.2f}")
-        print(f"Model Accuracy: {accuracy:.2f}")
-
+        print(f"My Model Accuracy: {accuracy1:.2f}")
+        print(f"OG Model Accuracy: {accuracy:.2f}")
+        print("My model predicitons: ", predictions1)
+        print("OG Model prediciton: ", predictions)
         
-        plt.grid(True)
+
         plt.xlabel("Iterations")
         plt.ylabel("Cost")
 
 fig,ax = plt.subplots(1,2)
-ax[0].plot(fits(x_train,y_train)[2])
-plt.grid(True)
-ax[1].plot(fits(x_train,y_train)[2])
-plt.grid(True)
+cf_matrix = 1 
+if cf_matrix == 1:
+    dl1 = {"California", "Florida","Florida","California"}
+    fig1 = ConfusionMatrixDisplay.from_predictions(y_test,predictions1,display_labels = dl1)
+ax[0].plot(fits(x_train,y_train)[1])
+ax[1].plot(fits(x_train,y_train)[1])
+
 plt.show()
 #classification_report fornisce informazioni sulle principali grandezze necessarie per stilare il report
 y_true = y_test
