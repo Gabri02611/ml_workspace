@@ -96,3 +96,4 @@ plt.title('Squared Loss')
 wpred = wgd[:,-1]
 print(w, wpred, np.abs(w-wpred))
 plt.show()
+
