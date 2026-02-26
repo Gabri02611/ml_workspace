@@ -42,7 +42,6 @@ def CloseRegression(X, y):
 def CloseRegressionReg(X,y,lam):
     w = np.linalg.inv(X.T @ X + lam * np.eye(X.shape[1])) @ X.T @ y
     return w
-def 
 # usage example
 
 
