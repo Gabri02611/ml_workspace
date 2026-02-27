@@ -13,17 +13,19 @@ def evaluate_poly(X, w):
     """
     # this is the actual degree - 1 because we have to consider the intercept
     deg = len(w)
-
     # column i is the i-th power of the datapoints
     X_pow = np.concatenate([np.power(X, i) for i in range(1, deg)], axis=1)
     return np.dot(X_pow, w[1:]) + w[0]
+
 def Poly_SquaredLoss(x,y,w): 
     y_poly = evaluate_poly(x_poly, w)
-    return np.mean((-y_poly_noise)**2)
+    return np.mean((y -y_poly_noise)**2)
+
 def PolGradientDescent(X,y,iter,gamma,n,d,tol = 1e-6):
+    X_pow = np.concatenate([np.power(X, i) for i in range(1, len(y)+1)], axis=1)
     W = np.zeros((d,iter))
     L = np.zeros(iter)
-    w = np.random.normal(0, 0.1, d)
+    w = np.zeros(len(y)+1)
     W[0] = w
     print(W[0])
     L[0] = Poly_SquaredLoss(X,y,w)
@@ -32,7 +34,8 @@ def PolGradientDescent(X,y,iter,gamma,n,d,tol = 1e-6):
         y_hat = evaluate_poly(X, w)
         w[0] = w[0] + (2*gamma/points)*np.sum(y - y_hat)
         for d in range(1,len(w)):
-            w[d] = w[d] + (2*gamma/points)*np.dot(X[:,d].T,(y-y_hat))
+            q = X_pow[:,d]
+            w[d] = w[d] + (2*gamma/points)*np.dot(q,(y-y_hat))
         L[i] = Poly_SquaredLoss(X,y,w)
         if L[i] < tol:
             break
@@ -48,11 +51,6 @@ y_poly = evaluate_poly(x_poly, w)
 eps = np.random.normal(0, 1, len(y_poly))
 y_poly_noise = y_poly + eps
 
-
-
-plt.plot(x_poly, y_poly_noise, 'o', markersize=4, c='orange')
-plt.plot(x_poly, y_poly, '-', c='blue')
-plt.title('Quadratic Noisy Data')
 i, wgd, L = PolGradientDescent(x_poly, y_poly_noise, iter, gamma, points, len(y_poly_noise))
 plt.plot(L)
 plt.xlabel('Iter')
